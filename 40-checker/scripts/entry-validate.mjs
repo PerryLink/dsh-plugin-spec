@@ -10,7 +10,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { parseVersion, satisfies, validRange } from '../src/semver.mjs'
+import { validRange, satisfies, parseVersion } from '../src/semver.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const STD = path.resolve(HERE, '..', '..')
@@ -26,7 +26,7 @@ Usage:
 Options:
   --meta <file>     JSON: repo, topics, archived, commit, pushedAt, installCommand, claimLevel
   --host-evidence <file>  JSON: { status: pass|fail|blocked|not-run, command, host, evidence, generatedAt }
-  --host-version <ver>    optional exact host version; C4 mismatch is a warning, not a fail
+  --host-version <v>      optional: warn when the declared C4 range does not match this host version
   --format text|json  default text
   --out <file>      write the JSON result
   --help            show this help
@@ -57,7 +57,7 @@ function parseArgs(argv) {
   }
   if (!options.dir) throw new Error('a plugin directory is required')
   if (!['text', 'json'].includes(options.format)) throw new Error('--format must be text or json')
-  if (options.hostVersion && !parseVersion(options.hostVersion)) throw new Error('--host-version must be an exact semver, e.g. 0.2.1-rc.5')
+  if (options.hostVersion && !parseVersion(options.hostVersion)) throw new Error(`--host-version is not a valid version: ${options.hostVersion}`)
   options.dir = path.resolve(options.dir)
   if (!fs.existsSync(path.join(options.dir, 'package.json'))) throw new Error(`not a package directory: ${options.dir}`)
   return options
@@ -87,7 +87,7 @@ function check(id, status, detail, evidence = null) {
   return { id, status, detail, evidence }
 }
 
-function run(dir, meta, hostVersion = null) {
+function run(dir, meta, env = {}) {
   const pkg = readJson(path.join(dir, 'package.json'), 'package.json')
   const dsh = pkg.dsh && typeof pkg.dsh === 'object' ? pkg.dsh : {}
   const checks = []
@@ -137,29 +137,39 @@ function run(dir, meta, hostVersion = null) {
     checks.push(check('C3', ok ? 'pass' : 'fail', `installCommand (declared; FLOW J1 still required for install evidence): ${command}`))
   }
 
-  // C4 — engines.dsh wins when both are present; peer is the fallback
-  const engineRange = pkg.engines?.dsh
-  const peerRange = pkg.peerDependencies?.['@deepseek-ai/dsh']
-  const peer = typeof peerRange === 'string' ? peerRange : null
-  const engine = typeof engineRange === 'string' ? engineRange : null
-  const wide = value => value.trim() === '*' || /(^|\s)(\*|x|X)(\s|$)/.test(value) || /\.(x|X|\*)/.test(value)
-  const source = engine ? 'engines.dsh' : 'peerDependencies["@deepseek-ai/dsh"]'
-  const range = engine ?? peer
-  if (!range) {
-    checks.push(check('C4', 'warn', 'no declared engines.dsh or @deepseek-ai/dsh peer range; host compatibility unknown'))
-  } else if (wide(range)) {
-    checks.push(check('C4', 'fail', `${source} is too wide: ${range}`))
-  } else if (!validRange(range)) {
-    checks.push(check('C4', 'fail', `${source} is not a valid range: ${range}`))
-  } else {
-    const ignored = engine && peer && peer !== engine ? ' (engines.dsh wins; peer range is ignored by the host)' : ''
-    const carrier = engine ? 'authoritative' : 'fallback'
-    if (hostVersion && !satisfies(hostVersion, range)) {
-      checks.push(check('C4', 'warn', `${source} = ${range} (${carrier} range; does not match --host-version ${hostVersion}${ignored}); install-time check remains authoritative`))
+  // C4 — engines-first, peer fallback (host: engines.dsh wins; peer is ignored when engines exists)
+  const engineRange = typeof pkg.engines?.dsh === 'string' ? pkg.engines.dsh : null
+  const peerRange = typeof pkg.peerDependencies?.['@deepseek-ai/dsh'] === 'string' ? pkg.peerDependencies['@deepseek-ai/dsh'] : null
+  const tooWide = (r) => r.trim() === '*' || /(^|\s)(\*|x|X)(\s|$)/.test(r) || /\.(x|X|\*)/.test(r)
+  const hostVersion = typeof env.hostVersion === 'string' ? env.hostVersion : null
+  const hostFit = (range) => (hostVersion && validRange(range) && !tooWide(range) ? satisfies(hostVersion, range) : null)
+  if (engineRange) {
+    const peerConflict = peerRange && peerRange.trim() !== engineRange.trim()
+    const fits = hostFit(engineRange)
+    if (tooWide(engineRange)) {
+      checks.push(check('C4', 'fail', `engines.dsh is too wide: ${engineRange}`))
+    } else if (!validRange(engineRange)) {
+      checks.push(check('C4', 'fail', `engines.dsh is not a valid range: ${engineRange}`))
+    } else if (peerConflict) {
+      checks.push(check('C4', 'warn', `engines.dsh = ${engineRange} (authoritative); peerDependencies["@deepseek-ai/dsh"] = ${peerRange} is ignored by the host${fits === false ? `; also does not match --host-version ${hostVersion}` : ''}`))
+    } else if (fits === false) {
+      checks.push(check('C4', 'warn', `engines.dsh = ${engineRange} does not match --host-version ${hostVersion} (declared range; install-time check still authoritative)`))
     } else {
-      const match = hostVersion ? `; matches --host-version ${hostVersion}` : ''
-      checks.push(check('C4', 'pass', `${source} = ${range} (${carrier} range${match}${ignored})`))
+      checks.push(check('C4', 'pass', `engines.dsh = ${engineRange} (authoritative range${fits === true ? `; matches --host-version ${hostVersion}` : '; runtime not tested'})`))
     }
+  } else if (peerRange) {
+    const fits = hostFit(peerRange)
+    if (tooWide(peerRange)) {
+      checks.push(check('C4', 'fail', `peerDependencies["@deepseek-ai/dsh"] is too wide: ${peerRange}`))
+    } else if (!validRange(peerRange)) {
+      checks.push(check('C4', 'fail', `peerDependencies["@deepseek-ai/dsh"] is not a valid range: ${peerRange}`))
+    } else if (fits === false) {
+      checks.push(check('C4', 'warn', `peerDependencies["@deepseek-ai/dsh"] = ${peerRange} (peer fallback) does not match --host-version ${hostVersion} (install-time check still authoritative)`))
+    } else {
+      checks.push(check('C4', 'pass', `peerDependencies["@deepseek-ai/dsh"] = ${peerRange} (peer fallback: no engines.dsh${fits === true ? `; matches --host-version ${hostVersion}` : '; runtime not tested'})`))
+    }
+  } else {
+    checks.push(check('C4', 'warn', 'no engines.dsh and no @deepseek-ai/dsh peer range; host compatibility unknown'))
   }
 
   // C5 — client export
@@ -286,7 +296,7 @@ function main() {
     const host = readJson(path.resolve(options.hostEvidence), '--host-evidence')
     meta = { ...(meta ?? {}), hostInstall: host }
   }
-  const result = run(options.dir, meta, options.hostVersion ?? null)
+  const result = run(options.dir, meta, { hostVersion: options.hostVersion })
   const output = options.format === 'json' ? JSON.stringify(result, null, 2) : render(result)
   if (options.out) {
     fs.mkdirSync(path.dirname(path.resolve(options.out)), { recursive: true })

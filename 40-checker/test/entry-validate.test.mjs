@@ -11,17 +11,26 @@ const STD = path.resolve(HERE, '..', '..')
 const SCRIPT = path.join(STD, '40-checker', 'scripts', 'entry-validate.mjs')
 const FIXTURES = path.join(STD, 'adoption', 'entry', 'fixtures')
 
-function run(name, withMeta = true, hostVersion = null) {
+function run(name, withMeta = true) {
   const dir = path.join(FIXTURES, name)
   const args = [SCRIPT, dir, '--json']
   const meta = path.join(dir, 'meta.json')
   if (withMeta && fs.existsSync(meta)) args.push('--meta', meta)
-  if (hostVersion) args.push('--host-version', hostVersion)
   return spawnSync(process.execPath, args, { encoding: 'utf8', timeout: 30_000 })
 }
 
-function result(name, withMeta = true, hostVersion = null) {
-  const out = run(name, withMeta, hostVersion)
+
+function runWith(name, extra) {
+  const dir = path.join(FIXTURES, name)
+  const meta = path.join(dir, 'meta.json')
+  const args = [SCRIPT, dir, '--json']
+  if (fs.existsSync(meta)) args.push('--meta', meta)
+  args.push(...extra)
+  return spawnSync(process.execPath, args, { encoding: 'utf8', timeout: 30_000 })
+}
+
+function result(name, withMeta = true) {
+  const out = run(name, withMeta)
   assert.ok(out.stdout, out.stderr)
   return { out, json: JSON.parse(out.stdout) }
 }
@@ -172,69 +181,77 @@ test('entry-validate: a missing license is A7 advisory, not a C6 fail', () => {
   } finally { fs.rmSync(dir, { recursive: true, force: true }) }
 })
 
-test('entry-validate: engines-only is a valid C4 carrier', () => {
-  const { out, json } = result('engines-only')
+test('C4: engines.dsh alone is the authoritative declaration', () => {
+  const { out, json } = result('c4-engines-only')
   assert.equal(out.status, 0, out.stderr)
   assert.equal(json.checks.find(row => row.id === 'C4').status, 'pass')
 })
 
-test('entry-validate: engines wins over a conflicting peer range', () => {
-  const { out, json } = result('engines-wins-peer-bad')
+test('C4: a conflicting peer next to engines.dsh is a warning (host ignores peer)', () => {
+  const { out, json } = result('c4-both-conflict')
   assert.equal(out.status, 0, out.stderr)
+  assert.equal(json.conclusion.status, 'pass-with-warnings')
+  assert.equal(json.checks.find(row => row.id === 'C4').status, 'warn')
+  assert.ok(json.conclusion.warnings.includes('C4'))
+  assert.deepEqual(json.conclusion.failed, [])
+})
+
+test('C4: engines.dsh wins over a peer even when the engines range is old (static cannot judge host fit)', () => {
+  // Static C4 only judges precedence and well-formedness. Whether "<0.0.1" fits the running
+  // host is an install-time fact (see C4-MATRIX.md); the host rejects it at `dsh plugin add`.
+  const { out, json } = result('c4-engines-bad-peer-ok')
+  assert.equal(out.status, 0, out.stderr)
+  assert.equal(json.checks.find(row => row.id === 'C4').status, 'warn')
+  assert.match(json.checks.find(row => row.id === 'C4').detail, /engines\.dsh/)
+})
+
+test('C4: no engines and no peer is a warning, not a fail', () => {
+  const { out, json } = result('c4-neither')
+  assert.equal(out.status, 0, out.stderr)
+  assert.equal(json.checks.find(row => row.id === 'C4').status, 'warn')
+})
+
+test('C4 --host-version: a matching range stays pass', () => {
+  const out = runWith('c4-host-match', ['--host-version', '0.2.1-rc.5'])
+  assert.equal(out.status, 0, out.stderr)
+  const json = JSON.parse(out.stdout)
   const c4 = json.checks.find(row => row.id === 'C4')
   assert.equal(c4.status, 'pass')
-  assert.match(c4.detail, /engines\.dsh wins/)
+  assert.match(c4.detail, /matches --host-version 0\.2\.1-rc\.5/)
 })
 
-test('entry-validate: a too-wide engines range fails even when peer is valid', () => {
-  const { out, json } = result('engines-too-wide-peer-ok')
-  assert.equal(out.status, 2, out.stderr)
-  assert.equal(json.checks.find(row => row.id === 'C4').status, 'fail')
-})
-
-test('entry-validate: --host-version match is a C4 pass', () => {
-  const { out, json } = result('good', true, '0.2.2-alpha.2')
+test('C4 --host-version: a non-matching engines range is a warning, not a fail', () => {
+  const out = runWith('c4-engines-only', ['--host-version', '0.2.1-rc.5'])
   assert.equal(out.status, 0, out.stderr)
-  const c4 = json.checks.find(row => row.id === 'C4')
-  assert.equal(c4.status, 'pass')
-  assert.match(c4.detail, /matches --host-version 0\.2\.2-alpha\.2/)
-})
-
-test('entry-validate: --host-version mismatch is a C4 warning, not a fail', () => {
-  const { out, json } = result('good', true, '0.1.0')
-  assert.equal(out.status, 0, out.stderr)
+  const json = JSON.parse(out.stdout)
   const c4 = json.checks.find(row => row.id === 'C4')
   assert.equal(c4.status, 'warn')
-  assert.match(c4.detail, /does not match --host-version 0\.1\.0/)
-  assert.equal(json.conclusion.status, 'pass-with-warnings')
+  assert.match(c4.detail, /does not match --host-version/)
 })
 
-test('entry-validate: --host-version uses engines when both carriers exist', () => {
-  const { out, json } = result('engines-wins-peer-bad', true, '0.2.2-alpha.2')
+test('C4 --host-version: engines still wins when a conflicting peer is present', () => {
+  const out = runWith('c4-both-conflict', ['--host-version', '0.2.1-rc.5'])
   assert.equal(out.status, 0, out.stderr)
+  const json = JSON.parse(out.stdout)
   const c4 = json.checks.find(row => row.id === 'C4')
-  assert.equal(c4.status, 'pass')
-  assert.match(c4.detail, /engines\.dsh wins/)
-  assert.match(c4.detail, /matches --host-version/)
+  assert.equal(c4.status, 'warn')
+  assert.match(c4.detail, /engines\.dsh/)
+  assert.match(c4.detail, /ignored by the host/)
 })
 
-test('entry-validate: --host-version falls back to peer when engines is absent', () => {
-  const { out, json } = result('peer-ok', true, '0.2.2-alpha.2')
+test('C4 --host-version: peer fallback keeps working and can warn on mismatch', () => {
+  const out = runWith('peer-ok', ['--host-version', '0.2.1-rc.5'])
   assert.equal(out.status, 0, out.stderr)
+  const json = JSON.parse(out.stdout)
   const c4 = json.checks.find(row => row.id === 'C4')
-  assert.equal(c4.status, 'pass')
-  assert.match(c4.detail, /peerDependencies\["@deepseek-ai\/dsh"\]/)
-  assert.match(c4.detail, /fallback range/)
+  assert.equal(c4.status, 'warn')
+  assert.match(c4.detail, /peer fallback/)
+  assert.match(c4.detail, /does not match --host-version/)
 })
 
-test('entry-validate: --host-version does not rescue a too-wide range', () => {
-  const { out, json } = result('engines-too-wide-peer-ok', true, '0.2.2-alpha.2')
+test('C4 --host-version: a wide range still fails', () => {
+  const out = runWith('engines-star', ['--host-version', '0.2.1-rc.5'])
   assert.equal(out.status, 2, out.stderr)
+  const json = JSON.parse(out.stdout)
   assert.equal(json.checks.find(row => row.id === 'C4').status, 'fail')
-})
-
-test('entry-validate: --host-version must be an exact semver', () => {
-  const out = spawnSync(process.execPath, [SCRIPT, path.join(FIXTURES, 'good'), '--json', '--host-version', 'not-a-version'], { encoding: 'utf8', timeout: 30_000 })
-  assert.equal(out.status, 3)
-  assert.match(out.stderr, /exact semver/)
 })

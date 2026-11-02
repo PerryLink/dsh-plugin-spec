@@ -11,7 +11,7 @@ Decision record: [`C3-DECISION-2026-11-02.md`](./C3-DECISION-2026-11-02.md). C3 
 | C1 | Public repo + `dsh-plugin` topic | The project is discoverable | Code quality, safety, maintenance |
 | C2 | `dsh.bundle` + existing patch file | The package declares an installable bundle | The bundle works on every host |
 | C3 | FLOW J1 install/uninstall evidence (flow-only) | The install command/result was recorded | Every profile/version works |
-| C4 | `engines.dsh` first; `peerDependencies["@deepseek-ai/dsh"]` fallback | The install-time compatibility range is valid | The declared range is valid and not `*`; engines wins when both exist; optional `--host-version` mismatch is a warning, not a fail |
+| C4 | `engines.dsh` (authoritative) or `@deepseek-ai/dsh` peer fallback | A compatibility claim exists; engines wins when both are present | The claim is true at runtime |
 | C5 | `dsh.client` has an existing `./client` export | The client entry is present | The UI renders correctly |
 | C6 | Entry declaration + description (license A7; repository optional) | Basic identity and metadata exist | The code is real or original |
 | C7 | Version + commit/digest + freshness | The subject is identifiable and recent | The version is correct or secure |
@@ -42,7 +42,9 @@ node 40-checker/scripts/entry-validate.mjs <plugin-dir> --meta <meta.json> --out
 
 Exit codes: `0` pass / pass-with-warnings; `2` fail; `3` incomplete (missing meta, blocked, or not-run checks).
 
-`--host-version` is optional and only refines C4 detail: engines wins, peer falls back, a mismatch is a warning and never replaces the install-time `dsh plugin add` result. C3 is **flow-only**: without `--host-evidence` it is `not-applicable` and does not block ENTRY; J1 is the required FLOW evidence. `--host-evidence` accepts:
+C3 is **flow-only**: without `--host-evidence` it is `not-applicable` and does not block ENTRY; J1 is the required FLOW evidence. `--host-version` (optional) only adds a **warning** when the authoritative C4 range does not include that host version; it never fails C4 and never replaces the install-time check done by `dsh plugin add`.
+
+`--host-evidence` accepts:
 
 ```json
 {

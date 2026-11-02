@@ -26,9 +26,10 @@
     },
     {
       "id": "C4",
-      "title": "engines.dsh first; peerDependencies[\"@deepseek-ai/dsh\"] fallback",
+      "title": "engines.dsh (authoritative) or @deepseek-ai/dsh peer fallback",
       "kind": "manifest",
-      "required": true
+      "required": true,
+      "description": "engines.dsh wins when present; the host ignores peerDependencies[\"@deepseek-ai/dsh\"] in that case. Peer is only a fallback when engines.dsh is absent."
     },
     {
       "id": "C5",
@@ -56,7 +57,6 @@
     }
   ],
   "rules": [
-    "C4: engines.dsh wins when both carriers exist; peerDependencies[\"@deepseek-ai/dsh\"] is the fallback when engines is absent.",
     "C1/C3/C7 need --meta; without it they are not-run, never upgraded to pass.",
     "C3 is flow-only: without --host-evidence it is not-applicable, not a missing ENTRY check. J1 is the required FLOW evidence.",
     "A safety category other than clean/mentions-only is advisory A6; do not auto-run C3 for it.",
@@ -66,8 +66,7 @@
     "C5 is not-applicable without a client; a declared but uncommitted build output is a warning.",
     "C6 checks the entry declaration and metadata; a declared but uncommitted build output is a warning.",
     "C8 rejects grade/score/rank/official/certified/secure/recommended fields and non-reference claimLevel.",
-    "A pass here is not a market acceptance, certification, security audit, or quality ranking.",
-    "C4 --host-version is optional: engines wins, peer falls back; a mismatch is a warning, never a fail or install evidence."
+    "A pass here is not a market acceptance, certification, security audit, or quality ranking."
   ],
   "notClaimed": [
     "official standard",
