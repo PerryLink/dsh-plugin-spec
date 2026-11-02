@@ -1,47 +1,42 @@
-# J3 schema correction — 2026-11-02
+# J3 schema correction — closed, no host bug (2026-11-02)
 
-> **This supersedes the J3-CLEAN conclusion. Do not send the host report yet.**
+> **Final status: no J3 bug. The host report is withdrawn.**
 > 非官方 · 非认证 · 无 `verified`.
 
-## Finding
+## What was wrong
 
-The J3-CLEAN test used `@yolk_vat-y/dsh-project-memory@0.6.8` (profile package; tarball `/tmp/dsh-pilot-2026-11-02/packs/yolk_vat-y-dsh-project-memory-0.6.8.tgz`). Its `package/src/index.js` schema is:
+The J3-CLEAN bundle test used `@yolk_vat-y/dsh-project-memory@0.6.8`, whose schema has:
 
-- top-level fields include `memoryDir` (string), `chunkChars` (number), `maxChunksPerFile` (number), `watch` (boolean), `watchInterval` (number);
-- `maxTokens` (number) and `budgetLog` (`off|once|all`) are **nested under `autoContext`**, not top-level.
+- top-level: `memoryDir`, `chunkChars`, `maxChunksPerFile`, `watch`, `watchInterval`;
+- nested under `autoContext`: `maxTokens`, `budgetLog`.
 
-Source: the profile tarball above, `package/src/index.js`; the local copy `00080000/dsh-project-memory` has the same shape and can be used as a readable reference (`src/index.js:26-54`, `:102-121`).
+J3-CLEAN put `maxTokens` / `budgetLog` at the **top level**. Those were unknown keys; Schemastery preserves unknown keys, so the silent result was expected. The built-in `$.port` control was valid, but the bundle case was not matched to the actual schema.
 
-The J3-CLEAN patches put `maxTokens` / `budgetLog` at the **top level**:
+## Corrected test (same plugin, temp profile)
 
-```yaml
-config:
-  maxTokens: "not-a-number"
-  budgetLog: loud
-```
+| case | actual |
+|---|---|
+| baseline valid | boot URL appears; no error |
+| `chunkChars: "not-a-number"` | `ValidationError` with **`$.chunkChars`**; entry not active; host continues |
+| `autoContext.maxTokens: "not-a-number"` | `ValidationError` with **`$.autoContext.maxTokens`**; entry not active; host continues |
+| `autoContext.budgetLog: "loud"` | `ValidationError` with **`$.autoContext.budgetLog`**; entry not active; host continues |
+| unknown top-level key | silent; Schemastery semantics, not a bug |
+| built-in `webserver` invalid `port` (host valid) | startup fails with **`$.port`** |
 
-Those are **unknown keys** for this plugin. Schemastery preserves unknown keys, so silent acceptance is the expected behavior — it does **not** prove that bundle entries bypass wrong-type/enum validation.
+## Conclusion
 
-## Corrected test matrix
+1. **Validation exists and paths are correct**, including nested paths.
+2. **Severity is sensible**: a bundle entry fails but the host keeps serving (warning + entry not active); a required built-in plugin failure stops startup.
+3. **Unknown key silent** is library semantics; at most a UX warning, not the same bug.
+4. **`--dump-config` does not validate**; validation happens at mount. This is worth documenting but is not a bug.
+5. **Withdraw** the J3 host report; no public issue; no standard change.
 
-| case | field | expected if host validates bundle entries |
-|---|---|---|
-| top-level wrong type | `chunkChars: "not-a-number"` | `$.chunkChars` or warning |
-| nested wrong type | `autoContext.maxTokens: "not-a-number"` | `$.autoContext.maxTokens` or warning |
-| nested enum | `autoContext.budgetLog: "loud"` | `$.autoContext.budgetLog` or warning |
-| unknown key | `totallyUnknownKey: true` | silent is expected (UX warning only) |
-| baseline | valid fields | boot normal |
+## Limits
 
-The built-in `webserver` control (`host` valid, only `port: "not-a-number"` → `$.port`) remains valid.
+- One plugin / one host / one OS.
+- Not tested: volatile fields, patch array shapes, other bundle entries.
+- This closes *this* case only; it does not prove all bundle entries are validated.
 
-## What to do
+## Supersedes
 
-1. **Do not send** `HOST-J3-BUG-REPORT-DRAFT.md` as-is.
-2. Rerun with `chunkChars` and `autoContext.*` fields; every other field valid.
-3. If all actual fields are silent: host validation gap is confirmed; then send a corrected report.
-4. If they fail with field paths: there is **no J3 bug**; the original result was unknown-key behavior.
-5. Either way, no C1–C8 change; unknown-key UX can be a separate optional warning.
-
-## Why this matters
-
-The built-in control is clean, but the bundle case was not matched to the actual schema. A host report based on the old case would be rejected as "those are unknown keys", and would damage credibility. The correction is a review finding, not a failure of the host.
+`J3-REPRO.md` and the J3-CLEAN "bundle not validated" conclusion are withdrawn. J3-CLEAN's built-in `$.port` control remains valid.
