@@ -11,7 +11,7 @@ Decision record: [`C3-DECISION-2026-11-02.md`](./C3-DECISION-2026-11-02.md). C3 
 | C1 | Public repo + `dsh-plugin` topic | The project is discoverable | Code quality, safety, maintenance |
 | C2 | `dsh.bundle` + existing patch file | The package declares an installable bundle | The bundle works on every host |
 | C3 | FLOW J1 install/uninstall evidence (flow-only) | The install command/result was recorded | Every profile/version works |
-| C4 | `engines.dsh` or `@deepseek-ai/dsh` peer range | A compatibility claim exists | The claim is true at runtime |
+| C4 | `peerDependencies["@deepseek-ai/dsh"]`; `engines.dsh` alone is a warning | Host-enforced compatibility carrier exists | The declared range is valid and not `*` |
 | C5 | `dsh.client` has an existing `./client` export | The client entry is present | The UI renders correctly |
 | C6 | Entry declaration + description (license A7; repository optional) | Basic identity and metadata exist | The code is real or original |
 | C7 | Version + commit/digest + freshness | The subject is identifiable and recent | The version is correct or secure |

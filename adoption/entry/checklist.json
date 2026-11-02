@@ -26,7 +26,7 @@
     },
     {
       "id": "C4",
-      "title": "engines.dsh or @deepseek-ai/dsh peer range",
+      "title": "peerDependencies[\"@deepseek-ai/dsh\"] (host-enforced); engines.dsh is compatibility/display",
       "kind": "manifest",
       "required": true
     },
@@ -56,6 +56,7 @@
     }
   ],
   "rules": [
+    "C4: peerDependencies[\"@deepseek-ai/dsh\"] is the host-enforced carrier; engines.dsh alone is a warning, not a pass.",
     "C1/C3/C7 need --meta; without it they are not-run, never upgraded to pass.",
     "C3 is flow-only: without --host-evidence it is not-applicable, not a missing ENTRY check. J1 is the required FLOW evidence.",
     "A safety category other than clean/mentions-only is advisory A6; do not auto-run C3 for it.",

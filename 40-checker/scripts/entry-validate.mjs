@@ -134,19 +134,22 @@ function run(dir, meta) {
     checks.push(check('C3', ok ? 'pass' : 'fail', `installCommand (declared; FLOW J1 still required for install evidence): ${command}`))
   }
 
-  // C4 — engines.dsh or peer range
+  // C4 — peerDependencies is the host-enforced carrier; engines.dsh alone is display-only
   const engineRange = pkg.engines?.dsh
   const peerRange = pkg.peerDependencies?.['@deepseek-ai/dsh']
-  const range = typeof engineRange === 'string' ? engineRange : typeof peerRange === 'string' ? peerRange : null
-  const source = typeof engineRange === 'string' ? 'engines.dsh' : 'peerDependencies["@deepseek-ai/dsh"]'
-  if (!range) {
-    checks.push(check('C4', 'warn', 'no declared engines.dsh or @deepseek-ai/dsh peer range; host compatibility unknown'))
-  } else if (range.trim() === '*' || /(^|\s)(\*|x|X)(\s|$)/.test(range) || /\.(x|X|\*)/.test(range)) {
-    checks.push(check('C4', 'fail', `${source} is too wide: ${range}`))
-  } else if (!validRange(range)) {
-    checks.push(check('C4', 'fail', `${source} is not a valid range: ${range}`))
+  const peer = typeof peerRange === 'string' ? peerRange : null
+  const engine = typeof engineRange === 'string' ? engineRange : null
+  const wide = value => value.trim() === '*' || /(^|\s)(\*|x|X)(\s|$)/.test(value) || /\.(x|X|\*)/.test(value)
+  if (peer) {
+    if (wide(peer)) checks.push(check('C4', 'fail', `peerDependencies["@deepseek-ai/dsh"] is too wide: ${peer}`))
+    else if (!validRange(peer)) checks.push(check('C4', 'fail', `peerDependencies["@deepseek-ai/dsh"] is not a valid range: ${peer}`))
+    else checks.push(check('C4', 'pass', `peerDependencies["@deepseek-ai/dsh"] = ${peer} (host-enforced range)`))
+  } else if (engine) {
+    if (wide(engine)) checks.push(check('C4', 'fail', `engines.dsh is too wide: ${engine}`))
+    else if (!validRange(engine)) checks.push(check('C4', 'fail', `engines.dsh is not a valid range: ${engine}`))
+    else checks.push(check('C4', 'warn', `engines.dsh = ${engine} only; the host reads peerDependencies["@deepseek-ai/dsh"], so this is a compatibility/display declaration`))
   } else {
-    checks.push(check('C4', 'pass', `${source} = ${range} (declared range; runtime not tested)`))
+    checks.push(check('C4', 'warn', 'no declared engines.dsh or @deepseek-ai/dsh peer range; host compatibility unknown'))
   }
 
   // C5 — client export

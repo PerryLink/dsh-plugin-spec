@@ -23,5 +23,8 @@
     "client": {
       "platform": "web"
     }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": ">=0.2.2-alpha.2 <0.3.0"
   }
 }

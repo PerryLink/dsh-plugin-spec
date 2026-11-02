@@ -170,3 +170,11 @@ test('entry-validate: a missing license is A7 advisory, not a C6 fail', () => {
     assert.ok(json.advisories.some(row => row.id === 'A7'))
   } finally { fs.rmSync(dir, { recursive: true, force: true }) }
 })
+
+test('entry-validate: valid engines.dsh without a peer range is a C4 warning, not a pass', () => {
+  const { out, json } = result('engines-only')
+  assert.equal(out.status, 0, out.stderr)
+  assert.equal(json.conclusion.status, 'pass-with-warnings')
+  assert.ok(json.conclusion.warnings.includes('C4'))
+  assert.equal(json.checks.find(row => row.id === 'C4').status, 'warn')
+})
