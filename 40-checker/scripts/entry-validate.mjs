@@ -134,22 +134,23 @@ function run(dir, meta) {
     checks.push(check('C3', ok ? 'pass' : 'fail', `installCommand (declared; FLOW J1 still required for install evidence): ${command}`))
   }
 
-  // C4 — peerDependencies is the host-enforced carrier; engines.dsh alone is display-only
+  // C4 — engines.dsh wins when both are present; peer is the fallback
   const engineRange = pkg.engines?.dsh
   const peerRange = pkg.peerDependencies?.['@deepseek-ai/dsh']
   const peer = typeof peerRange === 'string' ? peerRange : null
   const engine = typeof engineRange === 'string' ? engineRange : null
   const wide = value => value.trim() === '*' || /(^|\s)(\*|x|X)(\s|$)/.test(value) || /\.(x|X|\*)/.test(value)
-  if (peer) {
-    if (wide(peer)) checks.push(check('C4', 'fail', `peerDependencies["@deepseek-ai/dsh"] is too wide: ${peer}`))
-    else if (!validRange(peer)) checks.push(check('C4', 'fail', `peerDependencies["@deepseek-ai/dsh"] is not a valid range: ${peer}`))
-    else checks.push(check('C4', 'pass', `peerDependencies["@deepseek-ai/dsh"] = ${peer} (host-enforced range)`))
-  } else if (engine) {
-    if (wide(engine)) checks.push(check('C4', 'fail', `engines.dsh is too wide: ${engine}`))
-    else if (!validRange(engine)) checks.push(check('C4', 'fail', `engines.dsh is not a valid range: ${engine}`))
-    else checks.push(check('C4', 'warn', `engines.dsh = ${engine} only; the host reads peerDependencies["@deepseek-ai/dsh"], so this is a compatibility/display declaration`))
-  } else {
+  const source = engine ? 'engines.dsh' : 'peerDependencies["@deepseek-ai/dsh"]'
+  const range = engine ?? peer
+  if (!range) {
     checks.push(check('C4', 'warn', 'no declared engines.dsh or @deepseek-ai/dsh peer range; host compatibility unknown'))
+  } else if (wide(range)) {
+    checks.push(check('C4', 'fail', `${source} is too wide: ${range}`))
+  } else if (!validRange(range)) {
+    checks.push(check('C4', 'fail', `${source} is not a valid range: ${range}`))
+  } else {
+    const ignored = engine && peer && peer !== engine ? ' (engines.dsh wins; peer range is ignored by the host)' : ''
+    checks.push(check('C4', 'pass', `${source} = ${range} (install-time range${ignored})`))
   }
 
   // C5 — client export

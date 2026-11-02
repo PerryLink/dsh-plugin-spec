@@ -171,10 +171,22 @@ test('entry-validate: a missing license is A7 advisory, not a C6 fail', () => {
   } finally { fs.rmSync(dir, { recursive: true, force: true }) }
 })
 
-test('entry-validate: valid engines.dsh without a peer range is a C4 warning, not a pass', () => {
+test('entry-validate: engines-only is a valid C4 carrier', () => {
   const { out, json } = result('engines-only')
   assert.equal(out.status, 0, out.stderr)
-  assert.equal(json.conclusion.status, 'pass-with-warnings')
-  assert.ok(json.conclusion.warnings.includes('C4'))
-  assert.equal(json.checks.find(row => row.id === 'C4').status, 'warn')
+  assert.equal(json.checks.find(row => row.id === 'C4').status, 'pass')
+})
+
+test('entry-validate: engines wins over a conflicting peer range', () => {
+  const { out, json } = result('engines-wins-peer-bad')
+  assert.equal(out.status, 0, out.stderr)
+  const c4 = json.checks.find(row => row.id === 'C4')
+  assert.equal(c4.status, 'pass')
+  assert.match(c4.detail, /engines\.dsh wins/)
+})
+
+test('entry-validate: a too-wide engines range fails even when peer is valid', () => {
+  const { out, json } = result('engines-too-wide-peer-ok')
+  assert.equal(out.status, 2, out.stderr)
+  assert.equal(json.checks.find(row => row.id === 'C4').status, 'fail')
 })
