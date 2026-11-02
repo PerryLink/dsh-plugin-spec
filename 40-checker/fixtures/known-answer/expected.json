@@ -1,0 +1,18 @@
+{
+  "good": {
+    "expected": "pass",
+    "control": "positive",
+    "note": "entry static passes"
+  },
+  "bad-manifest": {
+    "expected": "fail",
+    "control": "negative",
+    "note": "invalid name/version must fail"
+  },
+  "skipped": {
+    "expected": "not-run",
+    "control": "not-run",
+    "note": "must not be treated as PASS",
+    "ignored": true
+  }
+}

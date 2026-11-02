@@ -1,0 +1,46 @@
+{
+  "schema": "dsh-webapp-smoke/1",
+  "generatedAt": "2026-10-31T22:30:00+08:00",
+  "samples": [
+    "SeaOf0__dsh-redteam-model",
+    "liguobao__ds-harness-remote",
+    "shaobeichen__dsh-pocket",
+    "ui-auth"
+  ],
+  "state": "web-profile-run-complete",
+  "reason": "4/4 web-app rows loaded in the real web profile; see 40-checker/results/webruntime/summary.json",
+  "observed": "12-13 plugins wait for webStartup/webServer/connection; no target row ACTIVE",
+  "notAClaim": "not a UI pixel review; server rows not asserted row-by-row",
+  "ci": {
+    "run": 41214493225,
+    "status": "failure",
+    "reason": "web boots but GET / returns 401; no auth/trusted-host configured"
+  },
+  "authProbe": {
+    "run": 41215756898,
+    "url": "https://github.com/PerryLink/dsh-standards/actions/runs/41215756898",
+    "workflow": ".github/workflows/web-smoke.yml",
+    "commit": "c0cc157",
+    "printedUrlShape": "http://127.0.0.1:<port>/?token=<process-launch-token>",
+    "unauthenticatedStatus": 401,
+    "tokenExchangeStatus": 303,
+    "setCookieShape": "dsh-auth-*; Max-Age=2592000; HttpOnly; SameSite=Strict",
+    "authenticatedIndexBytes": 38645,
+    "assertions": [
+      "<title>DeepSeek Harness</title>",
+      "<div id=\"root\">",
+      "cookie-authenticated / = 200"
+    ],
+    "conclusion": "The old 401 was the intended auth boundary, not a boot failure. The real web profile is reachable with the URL printed by dsh web."
+  },
+  "authEvidence": "40-checker/results/webapp/web-auth.json",
+  "result": {
+    "run": 41218358951,
+    "webappRows": 4,
+    "loaded": 4,
+    "clientRows": 15,
+    "clientLoaded": 15,
+    "gateRejected": 2,
+    "claim": "client-module-loaded"
+  }
+}

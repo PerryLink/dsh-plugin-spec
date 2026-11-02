@@ -1,0 +1,22 @@
+{
+  "name": "dsh-plugin-verify",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DS-C conformance checker MVP for DeepSeek Harness plugins (standalone, zero dependencies)",
+  "type": "module",
+  "bin": {
+    "dsh-plugin-verify": "bin/dsh-plugin-verify.mjs",
+    "dsh-levels": "bin/dsh-levels.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check:fixtures": "node bin/dsh-plugin-verify.mjs fixtures/good --format text; node bin/dsh-plugin-verify.mjs fixtures/bad --format text"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}

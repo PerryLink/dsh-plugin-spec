@@ -1,0 +1,79 @@
+name: governance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unit tests for the governance checks
+        run: >
+          node --test
+          40-checker/test/governance.test.mjs
+          40-checker/test/dco.test.mjs
+          40-checker/test/attestation.test.mjs
+          40-checker/test/claim.test.mjs
+          40-checker/test/verify.test.mjs
+          40-checker/test/client-shape.test.mjs
+          40-checker/test/ops.test.mjs
+
+      - name: Roles, contributors, reviewers, COI
+        run: node 40-checker/scripts/governance-check.mjs
+
+      - name: Clause map
+        run: node 40-checker/scripts/clause-map.mjs
+
+      - name: Evidence chain
+        run: node 40-checker/scripts/evidence-chain.mjs verify
+
+      - name: Stale clock
+        run: node 40-checker/scripts/stale-check.mjs
+
+      - name: Attestation JSON
+        run: node 40-checker/scripts/attestation-check.mjs
+
+      - name: Public claims
+        run: node 40-checker/scripts/claim-check.mjs
+
+      - name: Documented first-party commands
+        run: node 40-checker/scripts/doc-commands-check.mjs
+
+      - name: No Dependabot
+        run: node 40-checker/scripts/dependabot-check.mjs
+
+      - name: J5/J8 static preflight
+        run: node 40-checker/scripts/journey-disclosure-shape.mjs --package 40-checker/fixtures/good
+
+      - name: Verify the example record
+        run: node publish/verify.mjs --id DSH-ATT-2026-001
+
+      - name: Shell syntax
+        run: bash -n adoption/official/repro.sh
+
+      - name: Fetch the base branch for the DCO range
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags origin "${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+
+      - name: DCO and contribution terms
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: >
+          node 40-checker/scripts/dco-check.mjs
+          --range "origin/${{ github.base_ref }}..HEAD"
+          --require-terms
+          --pr-body-env PR_BODY
