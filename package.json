@@ -1,0 +1,24 @@
+{
+  "name": "dsh-plugin-spec",
+  "version": "0.1.1",
+  "description": "Rule core for DSH plugin standards: ENTRY / FLOW / BOOST clause text. Non-official; not a certification.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PerryLink/dsh-plugin-spec.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PerryLink/dsh-plugin-spec/issues"
+  },
+  "homepage": "https://github.com/PerryLink/dsh-plugin-spec#readme",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "31-DS-C条款.md",
+    "31-DSH-ENTRY入门规范.md",
+    "32-DS-R条款.md",
+    "32-DSH-FLOW顺畅规范.md",
+    "33-DS-G条款.md",
+    "33-DSH-BOOST加速实践.md"
+  ]
+}
