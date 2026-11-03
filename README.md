@@ -1,8 +1,12 @@
 # dsh-plugin-spec
 
-> **Renamed from `dsh-standards` / `@perrylink/dsh-standard`.** This is the public home of the DSH plugin standards draft. The old repository and both scoped npm reservations are deprecated; reference `dsh-plugin-spec`.
+> **Rule core.** This repository holds the low-level DSH plugin rule text and
+> clause source. The public execution umbrella is
+> [`dsh-standards`](https://github.com/PerryLink/dsh-standards); the prose guide
+> is [`dsh-plugin-guide`](https://github.com/PerryLink/dsh-plugin-guide).
+> The old `dsh-standards` pointer and scoped npm reservations are historical.
 
-> **非官方、非认证、非安全审计。** 这是 DSH 插件规范与实践草稿（canonical: dsh-standards），不代表 DeepSeek 官方背书。
+> **非官方、非认证、非安全审计。** 这是 DSH 插件规范与实践草稿（rule source: dsh-plugin-spec；execution: dsh-standards），不代表 DeepSeek 官方背书。
 > `"DeepSeek Harness"` 是 DeepSeek 的商标；本项目只使用 `DSH` 缩写。
 >
 > ⚠️ **修改必须说明**：复制或修改本仓文本时，必须在显著位置给出 Change Notice（来源 commit、改了哪个章节、改了什么、为什么、日期）。见 [`MODIFICATION-POLICY.md`](MODIFICATION-POLICY.md)。
