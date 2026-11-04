@@ -5,7 +5,7 @@
 > **版本**：v1.0.0-rc.1（T1 定稿候选，待项目发起人与工作组确认）
 > **日期**：2026-10-31
 > **依据**：`01-项目纲领.md`、`03-可行性与条款草案.md`、`10-输入/源码取证索引.md`、`00-索引.md`、`20-研究底稿/B-Cordis契约可判定性矩阵.md`、`20-研究底稿/C-安全基线与权限面.md`、`20-研究底稿/E-一致性检查器可行性.md`，以及 `deepseek-harness` 源码实测（commit `ce7073d51254c26cd63b22a60835b8f948deb447`，2026-10-30）。
-> **覆盖条款**：C-1 ～ C-13（13 条编号；C-10 为 advisory；C-3 仅 listing profile，见 §1.3 与 §6.1）。
+> **覆盖条款**：C-1 ～ C-14（14 条编号；C-10 为 advisory；C-3 仅 listing profile，见 §1.3 与 §6.1）。
 > **已知未完成项**：
 > 1. 检查器已实现（T2）：16 tests；10 个 GitHub 样本 + 4 个 npm bundle 的 L0；L1–L3 13/14 真实包（`41`/`81`）。本文件仍只定义检查项 ID、判定方式与覆盖门。
 > 2. C-3 的 listing 模式依赖市场索引与 placement；真实 3 个 format-1 快照（3,823/3,993/4,092）已用宿主 `parseMarketIndex` 验证 0 解析错误；T3 的 schema 补丁仍是提案。package 模式下 C-3 为 NA。
@@ -82,8 +82,8 @@ DS-C 的符合性绑定五元锚，缺一不可：
   "repo": "deepseek-ai/deepseek-harness",
   "commit": "ce7073d51254c26cd63b22a60835b8f948deb447",
   "scanner": "dsh-plugin-verify@<semver>",
-  "dsh": "0.2.2-alpha.2",
-  "cordis": "4.0.6-alpha.1"
+  "dsh": "0.2.2-alpha.3",
+  "cordis": "4.0.6-alpha.2"
 }
 ```
 
@@ -91,8 +91,8 @@ DS-C 的符合性绑定五元锚，缺一不可：
 
 | 轴 | 本 commit 实测 | 证据 |
 |---|---|---|
-| Harness 根包版本 | `0.2.2-alpha.2` | `REPO/package.json` 的 `version`；`getDshRuntimeVersion()` 实际读的是 `packages/boot/app-boot/package.json`（本 commit 同为 `0.2.2-alpha.2`，见 `REPO/packages/boot/app-boot/src/plugin-compatibility.ts:44-49`） |
-| vendored Cordis 包版本 | `4.0.6-alpha.1` | `REPO/vendor/cordis/package.json` 的 `version` |
+| Harness 根包版本 | `0.2.2-alpha.3` | `REPO/package.json` 的 `version`；`getDshRuntimeVersion()` 实际读的是 `packages/boot/app-boot/package.json`（本 commit 同为 `0.2.2-alpha.3`，见 `REPO/packages/boot/app-boot/src/plugin-compatibility.ts:44-49`） |
+| vendored Cordis 包版本 | `4.0.6-alpha.2` | `REPO/vendor/cordis/package.json` 的 `version` |
 | Cordis 上游基线 | `4.0.0-rc.11` | `REPO/vendor/README.md:19` |
 
 **任何条款在 `cordis` 轴跨 minor 后必须重跑适配层**；徽章必须带 `reviewedAt` 与 `expiresAt`。宿主 minor bump 后旧徽章标记 `stale`，不得继续展示为有效。
@@ -163,7 +163,7 @@ DS-C 的符合性绑定五元锚，缺一不可：
   "type": "module",
   "exports": { ".": "./lib/index.js" },
   "files": ["lib", "locale"],
-  "engines": { "dsh": ">=0.2.2-alpha.2 <0.3.0" },
+  "engines": { "dsh": ">=0.2.2-0 <0.3.0" },
   "peerDependencies": { "@deepseek-ai/cordis": ">=4.0.6-alpha.1 <5" },
   "dsh": { "manifestVersion": 1, "kind": "plugin" }
 }
@@ -198,25 +198,25 @@ DS-C 的符合性绑定五元锚，缺一不可：
 | NA | `dsh.kind` 非 plugin/bundle |
 
 **已知反例**：
-- `dsh-purge-plus` 适配到 `0.2.1-rc.2`，宿主已到 `0.2.2-alpha.2`，装上去就坏（`01-项目纲领.md:34` P0-3；`10-输入/生态调研报告.md:91`）。
+- `dsh-purge-plus` 适配到 `0.2.1-rc.2`，宿主已到 `0.2.2-alpha.3`，装上去就坏（`01-项目纲领.md:34` P0-3；`10-输入/生态调研报告.md:91`）。
 - 宿主 `plugin-compatibility.ts:62` 在"既无 `engines.dsh` 又无 `peerDependencies`"时 `return {}`，即**无声明 = 兼容**；这是本条款要堵的洞。
 - 构造反例：`engines.dsh: ">=0.2.1-rc.2"` 在 prerelease 语义下可能满足，但插件实际用了 0.2.2 才有的 API；版本声明正确不等于行为正确，C-4 只补一半。
 
 **证据锚点**：
 - `REPO/packages/boot/app-boot/src/plugin-compatibility.ts:55-74`：`unmetRequirements`；`:62` 无 peer 即返回空对象；`:69-71` 只看 `@deepseek-ai/dsh*` peer；`:87-102` `evaluatePluginCompatibility(manifest, exemptions, runtimeVersion)`。
 - `REPO/packages/boot/app-boot/src/plugin-compatibility.ts:110-117`：`pluginCompatibilityWarning` 给出精确版本豁免通道（`--accept-risk` / `allow-version`）。
-- `REPO/vendor/README.md:19`：Cordis 上游基线 `4.0.0-rc.11`；`REPO/vendor/cordis/package.json` 的 `4.0.6-alpha.1` 是 Harness 发布版本，不是上游基线。
+- `REPO/vendor/README.md:19`：Cordis 上游基线 `4.0.0-rc.11`；`REPO/vendor/cordis/package.json` 的 `4.0.6-alpha.2` 是 Harness 发布版本，不是上游基线。
 
 **正面示例**：
 
 ```json
-{ "engines": { "dsh": ">=0.2.2-alpha.2 <0.3.0" } }
+{ "engines": { "dsh": ">=0.2.2-0 <0.3.0" } }
 ```
 
 或（无 `engines.dsh` 时）：
 
 ```json
-{ "peerDependencies": { "@deepseek-ai/dsh-tools": ">=0.2.2-alpha.2 <0.3.0" } }
+{ "peerDependencies": { "@deepseek-ai/dsh-tools": ">=0.2.2-0 <0.3.0" } }
 ```
 
 **建议分级**：DS-C 强制。**本条款比宿主更严**：宿主允许"无声明即兼容"，DS-C 不允许；这是有意为之，因为无声明的插件无法被五元锚约束。
@@ -269,7 +269,7 @@ DS-C 的符合性绑定五元锚，缺一不可：
     "version": "1.2.3",
     "publishTimestamp": 1760000000,
     "source": { "type": "npm" },
-    "engines": { "dsh": ">=0.2.2-alpha.2 <0.3.0" }
+    "engines": { "dsh": ">=0.2.2-0 <0.3.0" }
   }]
 }
 ```
@@ -304,7 +304,7 @@ DS-C 的符合性绑定五元锚，缺一不可：
 
 **已知反例**：
 - 插件 `inject` 了一个没人提供的服务 → PENDING，打印 nothing，无错误（`REPO/docs/cordis-tutorial/06-composition-and-hmr.md:63`；`REPO/docs/cordis-tutorial/03-services.md:72`）。
-- `dsh-purge-plus` 适配到 `0.2.1-rc.2`，宿主已到 `0.2.2-alpha.2`：版本漂移使"装载前兼容性判定"不可靠（`10-输入/生态调研报告.md:91`；`01-项目纲领.md:34`）。
+- `dsh-purge-plus` 适配到 `0.2.1-rc.2`，宿主已到 `0.2.2-alpha.3`：版本漂移使"装载前兼容性判定"不可靠（`10-输入/生态调研报告.md:91`；`01-项目纲领.md:34`）。
 - 构造反例：入口 `import` 一个未声明的 peer，抛出 `ERR_MODULE_NOT_FOUND`；C-4.1 直接 FAIL。
 
 **证据锚点**：
@@ -859,8 +859,8 @@ E 路的 MVP 13 项（L0-1/2/3 + L1-1/3/4/5 + L2-1/2/4 + L3-1/3/5）只覆盖 C-
     "repo": "deepseek-ai/deepseek-harness",
     "commit": "ce7073d51254c26cd63b22a60835b8f948deb447",
     "scanner": "dsh-plugin-verify@0.1.0",
-    "dsh": "0.2.2-alpha.2",
-    "cordis": "4.0.6-alpha.1"
+    "dsh": "0.2.2-alpha.3",
+    "cordis": "4.0.6-alpha.2"
   },
   "subject": { "mode": "package", "profile": "package", "kind": "plugin", "name": "@acme/dsh-greet", "version": "1.2.3" },
   "checks": [
@@ -981,7 +981,7 @@ E 路的 MVP 13 项（L0-1/2/3 + L1-1/3/4/5 + L2-1/2/4 + L3-1/3/5）只覆盖 C-
 
 ### 6.6 版本轴措辞
 
-`03` §七.1 写"Cordis 4.0.0-rc.11"；`01` §十一只说"宿主仍在 rc"，没有区分三个轴。本 commit 实测：根包 `0.2.2-alpha.2`、vendored manifest `4.0.6-alpha.1`、`vendor/README.md:19` 记录的上游基线 `4.0.0-rc.11`。三个轴不是同一个东西。建议 `01`/`03` 改用 §1.5 的三轴写法，避免把上游基线当现值。
+`03` §七.1 写"Cordis 4.0.0-rc.11"；`01` §十一只说"宿主仍在 rc"，没有区分三个轴。本 commit 实测：根包 `0.2.2-alpha.3`、vendored manifest `4.0.6-alpha.2`、`vendor/README.md:19` 记录的上游基线 `4.0.0-rc.11`。三个轴不是同一个东西。建议 `01`/`03` 改用 §1.5 的三轴写法，避免把上游基线当现值。
 
 ### 6.7 两处研究底稿的行号/资产漂移
 
@@ -993,6 +993,19 @@ E 路的 MVP 13 项（L0-1/2/3 + L1-1/3/4/5 + L2-1/2/4 + L3-1/3/5）只覆盖 C-
 `03` 的 C-1 写"含 name/version/license/入口"，但宿主 manifest 类型不要求 license（`types.ts:8-29`）。把 license 设成 FAIL 会误杀大量长尾。本文件把它降到 WARN；建议 `03` 同步。
 
 ---
+
+### C-14 运行证据（runtime claim）
+
+**要求（祈使句）**：声明"可运行"的插件必须提供一次真实启动证据；未提供不得判 pass。plugin 走 L1 载入，bundle 走宿主 G0–G3。
+
+**判定方式**：L1（DSC-14）；`--no-exec` 或无 runtime 时记 `not-run`，不参与 ENTRY 强制统计。
+
+| 子项 | 检查 | 结果 |
+|---|---|---|
+| C-14.1 | 未声明 runtime claim | NA |
+| C-14.2 | 声明 runtime 但无证据 | not-run（不得写 pass） |
+| C-14.3 | 有证据且载入成功 | PASS |
+| C-14.4 | 有证据但载入失败 | FAIL |
 
 ## 七、附录 A · 证据核验表
 
