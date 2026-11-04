@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-spec",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Rule core for DSH plugin standards: ENTRY / FLOW / BOOST clause text. Non-official; not a certification.",
   "license": "Apache-2.0",
   "repository": {

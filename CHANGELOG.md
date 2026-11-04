@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-04 — 0.2.2-alpha.3 baseline in the three-level docs
+
+- Mirror the standards update: `31`/`32`/`33` baseline notes and `35` §七 evidence gates.
+
 ## 2026-11-02 — P0–P2, Apache-2.0, and attestation migration
 
 - Renamed certificate → attestation (`dsh-attestation/1`, `DSH-ATT-*`,
