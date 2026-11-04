@@ -343,6 +343,7 @@
     "flow": {
       "manual": "dsh-flow:manual",
       "runtime": "dsh-flow:runtime",
+      "failed": "dsh-flow:failed",
       "not-run": "dsh-flow:not-run"
     },
     "boost": {
