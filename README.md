@@ -50,8 +50,8 @@ node dsh-plugin-spec/40-checker/bin/dsh-plugin-verify.mjs --help
 | 3 | **DSH-BOOST 加速实践** | draft；LEV-1–8 **8/8 measured**（loader / context / provider-capture / synthetic timer；非生产基线） |
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v3-dark.svg">
-  <img src="docs/assets/dsh-plugin-spec-flow-v3-light.svg" width="100%" alt="dsh-plugin-spec 流程：插件目录 → --scope → dsh-plugin-verify → report → dsh-levels audit">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v4-dark.svg">
+  <img src="docs/assets/dsh-plugin-spec-flow-v4-light.svg" width="100%" alt="dsh-plugin-spec 流程：插件目录 → --scope → dsh-plugin-verify → report → dsh-levels audit">
 </picture>
 
 ## 三步上手

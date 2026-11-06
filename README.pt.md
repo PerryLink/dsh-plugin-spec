@@ -50,8 +50,8 @@ Os padrões são rascunhos: ENTRY já tem uma base `recognized`, enquanto FLOW /
 | 3 | **Práticas de aceleração DSH-BOOST** | draft; LEV-1–8 **8/8 medidos** (loader / context / provider-capture / timer sintético; linha de base não produtiva) |
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v3-dark.svg">
-  <img src="docs/assets/dsh-plugin-spec-flow-v3-light.svg" width="100%" alt="dsh-plugin-spec workflow: plugin dir → --scope → dsh-plugin-verify → report → dsh-levels audit">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v4-dark.svg">
+  <img src="docs/assets/dsh-plugin-spec-flow-v4-light.svg" width="100%" alt="dsh-plugin-spec workflow: plugin dir → --scope → dsh-plugin-verify → report → dsh-levels audit">
 </picture>
 
 ## Instalação em três passos

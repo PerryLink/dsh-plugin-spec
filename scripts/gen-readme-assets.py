@@ -209,82 +209,62 @@ def hero(lang, skin):
     print(f'dsh-plugin-spec-hero-{lang}-{skin}.webp')
 
 
-FLOW = {'light': dict(bg='#ffffff', card='#fcfcfe', edge='#e6e3f0',
-                      text='#141419', sub='#4d5261', accent='#4B67B4',
-                      accent2='#16a34a', grid='#f2f0f8', pill='#ece7f9'),
-        'dark': dict(bg='#0d1117', card='#161b26', edge='#2a3142',
-                     text='#f0f3f9', sub='#a8b1c4', accent='#8496f5',
-                     accent2='#3fb950', grid='#182031', pill='#242d42')}
+FLOW = {'light': dict(bg='#ffffff', zone='#f7f5fc', card='#ffffff',
+                      edge='#e6e3f0', text='#141419', sub='#4d5261',
+                      faint='#8f94a4', accent='#4B67B4', accent2='#16a34a',
+                      grid='#f2f0f8', pill='#ece7f9'),
+        'dark': dict(bg='#0d1117', zone='#121824', card='#161b26', edge='#2a3142',
+                     text='#f0f3f9', sub='#a8b1c4', faint='#737b8d',
+                     accent='#8496f5', accent2='#3fb950', grid='#182031',
+                     pill='#242d42')}
 
 
 def flow_svg(skin):
     s = FLOW[skin]
     W, H = 1100, 660
-    nodes = [('01', 'plugin dir', 'the repository', 50),
-             ('02', '--scope', 'entry / mvp / ds-c', 256),
-             ('03', 'dsh-plugin-verify', 'read-only checks', 462),
-             ('04', 'report', 'text / json / SARIF', 668),
-             ('05', 'dsh-levels audit', 'ENTRY/FLOW/BOOST', 874)]
-    nw, nh, y0 = 176, 118, 190
     solid = "0.10" if skin == 'light' else "0.55"
-    p = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="dsh-plugin-spec workflow">
+    pairs = [('ENTRY', '能装上、能跑、不崩', 'contract + manifest'),
+             ('FLOW', '日常任务顺、错误可恢复', 'install + smoke'),
+             ('BOOST', '提效证据可复现', 'perf + evidence')]
+    p = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="dsh-plugin-spec clause-to-check matrix">
 <defs>
-  <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="{s['accent']}" stop-opacity=".15"/>
-    <stop offset=".5" stop-color="{s['accent']}" stop-opacity=".9"/>
-    <stop offset="1" stop-color="{s['accent']}" stop-opacity=".15"/>
-  </linearGradient>
   <filter id="soft" x="-40%" y="-40%" width="180%" height="200%">
     <feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#1b1735" flood-opacity="{solid}"/>
   </filter>
   <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
     <circle cx="1.3" cy="1.3" r="1.3" fill="{s['grid']}"/>
   </pattern>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" fill="{s['accent']}"/>
+  </marker>
 </defs>
 <rect width="{W}" height="{H}" fill="{s['bg']}"/>
 <rect width="{W}" height="{H}" fill="url(#dots)" opacity=".5"/>
-<text x="50" y="62" fill="{s['text']}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="32" font-weight="700">dsh-plugin-spec</text>
-<text x="50" y="90" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16">clauses become executable checks · read-only, zero dependencies</text>
-<rect x="50" y="108" width="1000" height="1.6" rx="1" fill="{s['edge']}"/>''']
-    for i, (num, title, sub, x) in enumerate(nodes):
-        accent = s['accent2'] if i == 4 else (s['accent'] if i == 1 else s['edge'])
-        stroke = 2.6 if i in (1, 4) else 1.3
-        ti = 14.5 if len(title) > 14 else 15.5
-        p.append(f'''<g filter="url(#soft)">
-  <rect x="{x}" y="{y0}" width="{nw}" height="{nh}" rx="17" fill="{s['card']}" stroke="{accent}" stroke-width="{stroke}"/>
-</g>
-<circle cx="{x + 24}" cy="{y0 + 24}" r="12" fill="{s['pill']}"/>
-<text x="{x + 24}" y="{y0 + 29}" text-anchor="middle" fill="{s['accent']}" font-family="ui-monospace, monospace" font-size="11.5" font-weight="700">{num}</text>
-<text x="{x + nw / 2}" y="{y0 + 66}" text-anchor="middle" fill="{s['text']}" font-family="ui-monospace, monospace" font-size="{ti}" font-weight="700">{escape(title)}</text>
-<text x="{x + nw / 2}" y="{y0 + 92}" text-anchor="middle" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">{escape(sub)}</text>''')
-        if i < len(nodes) - 1:
-            x0, x1 = x + nw + 5, nodes[i + 1][3] - 5
-            mid, yy = (x0 + x1) / 2, y0 + nh / 2
-            p.append(f'''<path d="M{x0} {yy} C{mid} {yy}, {mid} {yy}, {x1} {yy}" stroke="url(#lineGrad)" stroke-width="2.2" fill="none"/>
-<path d="M{x1 - 10} {yy - 5} l8 5 -8 5" fill="none" stroke="{s['accent']}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>''')
-    # scope strip under node 2
-    p.append(f'''<g filter="url(#soft)">
-  <rect x="256" y="378" width="382" height="58" rx="15" fill="{s['pill']}" stroke="{s['accent']}" stroke-width="1.2"/>
-</g>
-<text x="280" y="404" fill="{s['accent']}" font-family="ui-monospace, monospace" font-size="13" font-weight="700">--scope entry | mvp | ds-c</text>
-<text x="280" y="423" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">one scope per run · no network, no writes</text>''')
-    # exit codes under node 5
-    for i, (code, name) in enumerate((('0', 'pass'), ('1', 'fail'), ('2', 'config'), ('3', 'runtime'))):
-        cx = 668 + i * 90
-        p.append(f'''<g filter="url(#soft)">
-  <rect x="{cx}" y="378" width="80" height="58" rx="13" fill="{s['card']}" stroke="{s['edge']}" stroke-width="1.1"/>
-</g>
-<text x="{cx + 40}" y="404" text-anchor="middle" fill="{s['accent']}" font-family="ui-monospace, monospace" font-size="15" font-weight="700">{code}</text>
-<text x="{cx + 40}" y="423" text-anchor="middle" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11.5">{name}</text>''')
-    p.append(f'''<rect x="50" y="476" width="1000" height="58" rx="15" fill="{s['card']}" stroke="{s['edge']}"/>
-<text x="74" y="502" fill="{s['accent']}" font-family="ui-monospace, monospace" font-size="13" font-weight="700">clauses ⟷ checker</text>
-<text x="74" y="522" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">every clause has a check; the checker never edits the repository it reads</text>
-<text x="50" y="596" fill="{s['sub']}" font-family="ui-monospace, monospace" font-size="13">CC-BY-4.0 / Apache-2.0 · PerryLink DSH plugin family</text>
+<text x="50" y="58" fill="{s['text']}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="32" font-weight="700">dsh-plugin-spec</text>
+<text x="50" y="86" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16">every clause has a check · the checker reads the repo, never edits it</text>
+<text x="60" y="126" fill="{s['accent']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="700">CLAUSES</text>
+<text x="640" y="126" fill="{s['accent2']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="700">CHECKS</text>
+''']
+    for i, (code, desc, checks) in enumerate(pairs):
+        y = 148 + i * 128
+        p.append(f'''<rect x="50" y="{y}" width="440" height="104" rx="16" fill="{s['card']}" stroke="{s['edge']}" filter="url(#soft)"/>
+<text x="72" y="{y + 32}" fill="{s['text']}" font-family="ui-monospace, monospace" font-size="19" font-weight="700">{code}</text>
+<text x="72" y="{y + 58}" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14">{desc}</text>
+<text x="72" y="{y + 84}" fill="{s['faint']}" font-family="ui-monospace, monospace" font-size="12">clauses/{code.lower()}.md</text>
+<rect x="610" y="{y}" width="440" height="104" rx="16" fill="{s['card']}" stroke="{s['edge']}" filter="url(#soft)"/>
+<text x="632" y="{y + 32}" fill="{s['accent2']}" font-family="ui-monospace, monospace" font-size="14" font-weight="700">{checks}</text>
+<text x="632" y="{y + 58}" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">--scope {code.lower()} → one report entry</text>
+<text x="632" y="{y + 84}" fill="{s['faint']}" font-family="ui-monospace, monospace" font-size="12">same id on both sides = the contract</text>
+<line x1="496" y1="{y + 52}" x2="604" y2="{y + 52}" stroke="{s['accent']}" stroke-width="2" marker-start="url(#arr)" marker-end="url(#arr)"/>''')
+    p.append(f'''<rect x="50" y="536" width="1000" height="52" rx="14" fill="{s['card']}" stroke="{s['accent']}" stroke-width="1.6"/>
+<text x="74" y="558" fill="{s['accent']}" font-family="ui-monospace, monospace" font-size="12.5" font-weight="700">$ dsh-plugin-verify --scope entry</text>
+<text x="74" y="578" fill="{s['sub']}" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">text / json / SARIF · report.json · exit 0 | 1 | 2 | 3</text>
+<text x="50" y="618" fill="{s['sub']}" font-family="ui-monospace, monospace" font-size="12.5">CC-BY-4.0 / Apache-2.0 · PerryLink DSH plugin family</text>
 </svg>''')
-    with open(os.path.join(OUT, f'dsh-plugin-spec-flow-v3-{skin}.svg'), 'w',
+    with open(os.path.join(OUT, f'dsh-plugin-spec-flow-v4-{skin}.svg'), 'w',
               encoding='utf-8', newline='\n') as fh:
         fh.write('\n'.join(p) + '\n')
-    print(f'dsh-plugin-spec-flow-v3-{skin}.svg')
+    print(f'dsh-plugin-spec-flow-v4-{skin}.svg')
 
 
 def main():

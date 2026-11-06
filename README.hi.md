@@ -50,8 +50,8 @@ node dsh-plugin-spec/40-checker/bin/dsh-plugin-verify.mjs --help
 | 3 | **DSH-BOOST त्वरण प्रथाएँ** | draft; LEV-1–8 **8/8 मापे गए** (loader / context / provider-capture / synthetic timer; गैर-उत्पादन आधार) |
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v3-dark.svg">
-  <img src="docs/assets/dsh-plugin-spec-flow-v3-light.svg" width="100%" alt="dsh-plugin-spec workflow: plugin dir → --scope → dsh-plugin-verify → report → dsh-levels audit">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v4-dark.svg">
+  <img src="docs/assets/dsh-plugin-spec-flow-v4-light.svg" width="100%" alt="dsh-plugin-spec workflow: plugin dir → --scope → dsh-plugin-verify → report → dsh-levels audit">
 </picture>
 
 ## तीन चरणों में शुरुआत
