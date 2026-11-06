@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-label="dsh-plugin-spec pipeline">
+<title>dsh-plugin-spec pipeline</title>
+<rect width="1200" height="430" rx="18" fill="#ffffff"/>
+<text x="50" y="58" fill="#1f2328" font-family="ui-sans-serif,system-ui,sans-serif" font-size="30" font-weight="700">dsh-plugin-spec</text>
+<text x="50" y="90" fill="#57606a" font-family="ui-monospace,monospace" font-size="15">DSH-ENTRY · DSH-FLOW · DSH-BOOST · 40-checker</text>
+<line x1="50" y1="112" x2="1150" y2="112" stroke="#d0d7de"/>
+<rect x="50" y="150" width="196" height="92" rx="14" fill="#f6f8fa" stroke="#d0d7de" stroke-width="2"/>
+<text x="148" y="187" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="15" font-weight="700">plugin dir</text>
+<text x="148" y="214" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">cordis.patch.yml</text>
+<path d="M251 196h20" stroke="#57606a" stroke-width="3"/>
+<path d="M269 190l9 6-9 6" fill="none" stroke="#57606a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="276" y="150" width="196" height="92" rx="14" fill="#f6f8fa" stroke="#4B67B4" stroke-width="2"/>
+<text x="374" y="187" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="15" font-weight="700">dsh-plugin-verify</text>
+<text x="374" y="214" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">--scope entry|mvp|ds-c</text>
+<path d="M477 196h20" stroke="#57606a" stroke-width="3"/>
+<path d="M495 190l9 6-9 6" fill="none" stroke="#57606a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="502" y="150" width="196" height="92" rx="14" fill="#f6f8fa" stroke="#d0d7de" stroke-width="2"/>
+<text x="600" y="187" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="15" font-weight="700">report</text>
+<text x="600" y="214" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">text · json · SARIF</text>
+<path d="M703 196h20" stroke="#57606a" stroke-width="3"/>
+<path d="M721 190l9 6-9 6" fill="none" stroke="#57606a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="728" y="150" width="196" height="92" rx="14" fill="#f6f8fa" stroke="#d0d7de" stroke-width="2"/>
+<text x="826" y="187" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="15" font-weight="700">dsh-levels audit</text>
+<text x="826" y="214" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">ENTRY · FLOW · BOOST</text>
+<path d="M929 196h20" stroke="#57606a" stroke-width="3"/>
+<path d="M947 190l9 6-9 6" fill="none" stroke="#57606a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="954" y="150" width="196" height="92" rx="14" fill="#f6f8fa" stroke="#16a34a" stroke-width="2"/>
+<text x="1052" y="187" fill="#1f2328" text-anchor="middle" font-family="ui-monospace,monospace" font-size="15" font-weight="700">exit 0|1|2|3</text>
+<text x="1052" y="214" fill="#57606a" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">PASS · WARN · FAIL</text>
+<rect x="50" y="282" width="350" height="76" rx="12" fill="#f6f8fa" stroke="#4B67B4" stroke-width="2"/>
+<text x="70" y="313" fill="#1f2328" font-family="ui-monospace,monospace" font-size="15" font-weight="700">DSH-ENTRY</text>
+<text x="380" y="313" fill="#57606a" text-anchor="end" font-family="ui-monospace,monospace" font-size="13">18/18 recognized</text>
+<line x1="70" y1="326" x2="380" y2="326" stroke="#eaeef2"/>
+<text x="70" y="345" fill="#57606a" font-family="ui-monospace,monospace" font-size="12">DSC-01…DSC-13</text>
+<rect x="425" y="282" width="350" height="76" rx="12" fill="#f6f8fa" stroke="#4B67B4" stroke-width="2"/>
+<text x="445" y="313" fill="#1f2328" font-family="ui-monospace,monospace" font-size="15" font-weight="700">DSH-FLOW</text>
+<text x="755" y="313" fill="#57606a" text-anchor="end" font-family="ui-monospace,monospace" font-size="13">12 PASS · fixture</text>
+<line x1="445" y1="326" x2="755" y2="326" stroke="#eaeef2"/>
+<text x="445" y="345" fill="#57606a" font-family="ui-monospace,monospace" font-size="12">J1…J8</text>
+<rect x="800" y="282" width="350" height="76" rx="12" fill="#f6f8fa" stroke="#16a34a" stroke-width="2"/>
+<text x="820" y="313" fill="#1f2328" font-family="ui-monospace,monospace" font-size="15" font-weight="700">DSH-BOOST</text>
+<text x="1130" y="313" fill="#57606a" text-anchor="end" font-family="ui-monospace,monospace" font-size="13">8/8 measured</text>
+<line x1="820" y1="326" x2="1130" y2="326" stroke="#eaeef2"/>
+<text x="820" y="345" fill="#57606a" font-family="ui-monospace,monospace" font-size="12">LEV-1…LEV-8</text>
+<text x="50" y="404" fill="#57606a" font-family="ui-monospace,monospace" font-size="13">--runtime &lt;path&gt; · --host &lt;path&gt; · --flow-evidence &lt;file&gt; · --boost-evidence &lt;file&gt;</text>
+<text x="1150" y="404" fill="#57606a" text-anchor="end" font-family="ui-monospace,monospace" font-size="13">73/73 tests</text>
+</svg>
