@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-dark.svg">
-  <img src="docs/assets/dsh-plugin-spec-flow-light.svg" width="100%" alt="dsh-plugin-spec फ़्लो: प्लगइन डायरेक्टरी → dsh-plugin-verify (--scope entry / mvp / ds-c) → text / json / SARIF रिपोर्ट → dsh-levels audit (ENTRY / FLOW / BOOST) → exit 0 / 1 / 2 / 3">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-hero-en-dark.webp">
+  <img src="docs/assets/dsh-plugin-spec-hero-en-light.webp" width="100%" alt="dsh-plugin-spec: clauses and checker in one repo; read it, then run it">
 </picture>
 
 # dsh-plugin-spec
@@ -48,6 +48,11 @@ node dsh-plugin-spec/40-checker/bin/dsh-plugin-verify.mjs --help
 | 1 | **DSH-ENTRY प्रवेश मानक** | 18/18 `recognized`; base-only 10/18 सत्यापित (8 clean + 2 gate-reject); वास्तविक web profile 18/18 सत्यापित (16 clean + 2 gate-reject); client 15/15 लोड; 18/18 clean नहीं हुआ |
 | 2 | **DSH-FLOW सहजता मानक** | draft; fixture पर J1/J2/J4/J6 **12 PASS**; J3/J7 fixture runtime; J5/J8 static preflight; 10 वास्तविक पैकेज **78 PASS / 4 FAIL / 2 blocked / 66 not-run** |
 | 3 | **DSH-BOOST त्वरण प्रथाएँ** | draft; LEV-1–8 **8/8 मापे गए** (loader / context / provider-capture / synthetic timer; गैर-उत्पादन आधार) |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v3-dark.svg">
+  <img src="docs/assets/dsh-plugin-spec-flow-v3-light.svg" width="100%" alt="dsh-plugin-spec workflow: plugin dir → --scope → dsh-plugin-verify → report → dsh-levels audit">
+</picture>
 
 ## तीन चरणों में शुरुआत
 

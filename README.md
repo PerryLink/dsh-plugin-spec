@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-dark.svg">
-  <img src="docs/assets/dsh-plugin-spec-flow-light.svg" width="100%" alt="dsh-plugin-spec 工作流：插件目录 → dsh-plugin-verify（--scope entry / mvp / ds-c）→ text / json / SARIF 报告 → dsh-levels audit（ENTRY / FLOW / BOOST）→ exit 0 / 1 / 2 / 3">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-hero-zh-dark.webp">
+  <img src="docs/assets/dsh-plugin-spec-hero-zh-light.webp" width="100%" alt="dsh-plugin-spec：条款与检查器同仓，读完即可对插件目录出报告">
 </picture>
 
 # dsh-plugin-spec
@@ -48,6 +48,11 @@ node dsh-plugin-spec/40-checker/bin/dsh-plugin-verify.mjs --help
 | 1 | **DSH-ENTRY 入门规范** | 18/18 `recognized`；base-only 10/18 已验证（8 clean + 2 gate-reject）；真实 web profile 18/18 已验证（16 clean + 2 gate-reject）；client 15/15 loaded；18/18 clean 未达成 |
 | 2 | **DSH-FLOW 顺畅规范** | draft；fixture 上 J1/J2/J4/J6 **12 PASS**；J3/J7 fixture runtime；J5/J8 static preflight；10 个真实包 **78 PASS / 4 FAIL / 2 blocked / 66 not-run** |
 | 3 | **DSH-BOOST 加速实践** | draft；LEV-1–8 **8/8 measured**（loader / context / provider-capture / synthetic timer；非生产基线） |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v3-dark.svg">
+  <img src="docs/assets/dsh-plugin-spec-flow-v3-light.svg" width="100%" alt="dsh-plugin-spec 流程：插件目录 → --scope → dsh-plugin-verify → report → dsh-levels audit">
+</picture>
 
 ## 三步上手
 

@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-dark.svg">
-  <img src="docs/assets/dsh-plugin-spec-flow-light.svg" width="100%" alt="dsh-plugin-spec pipeline: plugin directory → dsh-plugin-verify (--scope entry / mvp / ds-c) → text / json / SARIF report → dsh-levels audit (ENTRY / FLOW / BOOST) → exit 0 / 1 / 2 / 3">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-hero-en-dark.webp">
+  <img src="docs/assets/dsh-plugin-spec-hero-en-light.webp" width="100%" alt="dsh-plugin-spec: clauses and checker in one repo; read it, then run it">
 </picture>
 
 # dsh-plugin-spec
@@ -48,6 +48,11 @@ The standards are drafts: ENTRY has a `recognized` baseline, while FLOW / BOOST 
 | 1 | **DSH-ENTRY entry standard** | 18/18 `recognized`; base-only 10/18 verified (8 clean + 2 gate-reject); real web profile 18/18 verified (16 clean + 2 gate-reject); client 15/15 loaded; 18/18 clean not achieved |
 | 2 | **DSH-FLOW smoothness standard** | draft; J1/J2/J4/J6 **12 PASS** on the fixture; J3/J7 fixture runtime; J5/J8 static preflight; 10 real packages **78 PASS / 4 FAIL / 2 blocked / 66 not-run** |
 | 3 | **DSH-BOOST acceleration practices** | draft; LEV-1–8 **8/8 measured** (loader / context / provider-capture / synthetic timer; non-production baseline) |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v3-dark.svg">
+  <img src="docs/assets/dsh-plugin-spec-flow-v3-light.svg" width="100%" alt="dsh-plugin-spec workflow: plugin dir → --scope → dsh-plugin-verify → report → dsh-levels audit">
+</picture>
 
 ## Three-step setup
 

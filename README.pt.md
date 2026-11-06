@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-dark.svg">
-  <img src="docs/assets/dsh-plugin-spec-flow-light.svg" width="100%" alt="fluxo do dsh-plugin-spec: diretório do plugin → dsh-plugin-verify (--scope entry / mvp / ds-c) → relatório text / json / SARIF → dsh-levels audit (ENTRY / FLOW / BOOST) → exit 0 / 1 / 2 / 3">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-hero-en-dark.webp">
+  <img src="docs/assets/dsh-plugin-spec-hero-en-light.webp" width="100%" alt="dsh-plugin-spec: clauses and checker in one repo; read it, then run it">
 </picture>
 
 # dsh-plugin-spec
@@ -48,6 +48,11 @@ Os padrões são rascunhos: ENTRY já tem uma base `recognized`, enquanto FLOW /
 | 1 | **Padrão de entrada DSH-ENTRY** | 18/18 `recognized`; base-only 10/18 verificados (8 clean + 2 gate-reject); perfil web real 18/18 verificados (16 clean + 2 gate-reject); client 15/15 carregados; 18/18 clean não alcançado |
 | 2 | **Padrão de fluidez DSH-FLOW** | draft; J1/J2/J4/J6 **12 PASS** no fixture; J3/J7 runtime de fixture; J5/J8 preflight estático; 10 pacotes reais **78 PASS / 4 FAIL / 2 blocked / 66 not-run** |
 | 3 | **Práticas de aceleração DSH-BOOST** | draft; LEV-1–8 **8/8 medidos** (loader / context / provider-capture / timer sintético; linha de base não produtiva) |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-plugin-spec-flow-v3-dark.svg">
+  <img src="docs/assets/dsh-plugin-spec-flow-v3-light.svg" width="100%" alt="dsh-plugin-spec workflow: plugin dir → --scope → dsh-plugin-verify → report → dsh-levels audit">
+</picture>
 
 ## Instalação em três passos
 
